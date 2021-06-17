@@ -1,0 +1,86 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+}
+
+.block {
+  width: 100px;
+  height: 100px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: x-large;
+}
+
+.purple {
+  background-color: purple;
+  border-color: purple;
+  color: purple;
+}
+
+.green {
+  background-color: green;
+  border-color: green;
+  color: green;
+}
+
+.yellow {
+  background-color: yellow;
+  border-color: yellow;
+  color: yellow;
+}
+
+.red {
+  background-color: red;
+  border-color: red;
+  color: red;
+}
+
+.blue {
+  background-color: blue;
+  border-color: blue;
+  color: blue;
+}
+
+.pink {
+  background-color: pink;
+  border-color: pink;
+  color: pink;
+}
+
+.orange {
+  background-color: orange;
+  border-color: orange;
+  color: orange;
+}
+
+.gray {
+  background-color: gray;
+  border-color: gray;
+  color: gray;
+}
+
+.wrong {
+  background-color: black !important;
+  border-color: black !important;
+  color: black !important;
+}
+
+.invalid {
+  background-color: red;
+}
+.color-head {
+  width: 30px;
+  height: 5px;
+}
+
+.combination {
+  text-align: end;
+}

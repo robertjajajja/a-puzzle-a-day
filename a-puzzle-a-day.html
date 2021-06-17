@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="a-puzzle-a-day.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="block" id="block00">Jan</div>
+      <div class="block" id="block01">Feb</div>
+      <div class="block" id="block02">Mar</div>
+      <div class="block" id="block03">Apr</div>
+      <div class="block" id="block04">May</div>
+      <div class="block" id="block05">Jun</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block10">Jul</div>
+      <div class="block" id="block11">Aug</div>
+      <div class="block" id="block12">Sep</div>
+      <div class="block" id="block13">Oct</div>
+      <div class="block" id="block14">Nov</div>
+      <div class="block" id="block15">Dec</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block20">1</div>
+      <div class="block" id="block21">2</div>
+      <div class="block" id="block22">3</div>
+      <div class="block" id="block23">4</div>
+      <div class="block" id="block24">5</div>
+      <div class="block" id="block25">6</div>
+      <div class="block" id="block26">7</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block30">8</div>
+      <div class="block" id="block31">9</div>
+      <div class="block" id="block32">10</div>
+      <div class="block" id="block33">11</div>
+      <div class="block" id="block34">12</div>
+      <div class="block" id="block35">13</div>
+      <div class="block" id="block36">14</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block40">15</div>
+      <div class="block" id="block41">16</div>
+      <div class="block" id="block42">17</div>
+      <div class="block" id="block43">18</div>
+      <div class="block" id="block44">19</div>
+      <div class="block" id="block45">20</div>
+      <div class="block" id="block46">21</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block50">22</div>
+      <div class="block" id="block51">23</div>
+      <div class="block" id="block52">24</div>
+      <div class="block" id="block53">25</div>
+      <div class="block" id="block54">26</div>
+      <div class="block" id="block55">27</div>
+      <div class="block" id="block56">28</div>
+    </div>
+    <div class="row">
+      <div class="block" id="block60">29</div>
+      <div class="block" id="block61">30</div>
+      <div class="block" id="block62">31</div>
+    </div>
+  </div>
+  <table class="stats">
+    <thead><tr>
+      <td class="color-head" style="background-color: purple"></td>
+      <td class="color-head" style="background-color: green"></td>
+      <td class="color-head" style="background-color: yellow"></td>
+      <td class="color-head" style="background-color: red"></td>
+      <td class="color-head" style="background-color: blue"></td>
+      <td class="color-head" style="background-color: pink"></td>
+      <td class="color-head" style="background-color: orange"></td>
+      <td class="color-head" style="background-color: gray"></td>
+    </tr></thead>
+    <tbody><tr>
+      <td class="combination" id="color0"></td>
+      <td class="combination" id="color1"></td>
+      <td class="combination" id="color2"></td>
+      <td class="combination" id="color3"></td>
+      <td class="combination" id="color4"></td>
+      <td class="combination" id="color5"></td>
+      <td class="combination" id="color6"></td>
+      <td class="combination" id="color7"></td>
+    </tr></tbody>
+  </table>
+  <div class="result"></div>
+  <input id="month" value="Jun" />
+  <input id="day" value="18" />
+  <button onclick="stop = !stop; main()">Stop/Start</button>
+  <script src="lodash.min.js"></script>
+  <script src="a-puzzle-a-day.js"></script>
+</body>
