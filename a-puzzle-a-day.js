@@ -1,4 +1,3 @@
-const targets = [];
 const boardNames = [
   ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
   ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -8,9 +7,7 @@ const boardNames = [
   [ '22',  '23',  '24',  '25',  '26',  '27',  '28'],
   [ '29',  '30',  '31'],
 ];
-const boardNameMap = {};
-boardNames.forEach((r, i) => r.forEach((v, j) => boardNameMap[v] = [i, j]));
-let targetPositions;
+const boardNamePositionMap = {};
 
 const pieces = [
   [[[0, 0], [1, 0], [2, 0], [2, 1], [3, 1]]],          // purple
@@ -22,78 +19,110 @@ const pieces = [
   [[[0, 3], [1, 0], [1, 1], [1, 2], [1, 3]]],          // orange
   [[[0, 0], [0, 2], [1, 0], [1, 1], [1, 2]]],          // gray
 ];
-generatePieces();
 
 const pieceColors = [
   'purple', 'green', 'yellow', 'red', 'blue', 'pink', 'orange', 'gray'
 ];
 
-let combinations;
+boardNames.forEach((r, i) => r.forEach((v, j) => boardNamePositionMap[v] = [i, j]));
+generateDirections();
+
+let targetPositions;
+let piecePositions;
 let count = 0;
 let startTime;
-
 let stop = true;
-let immiExit = true;
 
 function init() {
+  clearBoard();
+  const targets = [];
   targets[0] = document.querySelector('#month').value;
-  targets[1] = document.querySelector('#day').value;
-  targetPositions = targets.map(t => boardNameMap[t]);
-  combinations = [];
-  generateCombinations();
+  targets[1] = document.querySelector('#date').value;
+  targetPositions = targets.map(t => boardNamePositionMap[t]);
+  piecePositions = [];
+  generateAllPiecePositions();
   removeTargetsFromCombinations();
-  count = 0;
   startTime = undefined;
 }
 
+function noGUI() {
+  if (stop) {
+    return;
+  }
+
+  init();
+  count = -1;
+  requestAnimationFrame(step);
+  function step() {
+    if (count === -1) {
+      document.querySelector('.result').innerHTML = 'running...';
+      count++;
+      requestAnimationFrame(step);
+    } else {
+      const stacks = [getNextPossibleSelections([], 0), [], [], [], [], [], [], []];
+      let currentIndexes = [];
+      while (currentIndexes.length !== pieceColors.length && !stop) {
+        if (!startTime) {
+          startTime = (new Date()).getTime();
+        }
+        const lastIndex = _.findLastIndex(stacks, stack => stack.length !== 0);
+        currentIndexes[lastIndex] = stacks[lastIndex].shift();
+        currentIndexes = currentIndexes.slice(0, lastIndex + 1);
+        count++;
+
+        if (lastIndex !== pieceColors.length - 1) {
+          stacks[lastIndex + 1] = getNextPossibleSelections(currentIndexes, lastIndex + 1);
+        }
+      }
+      const elapsedTime = (new Date()).getTime() - startTime;
+      colorBoard(currentIndexes, elapsedTime);
+      stop = true;
+    }
+  }
+}
+
 function main() {
-  if (!stop) {
-    init();
-    const stacks = [
-      getNextPossibleSelections([], 0),
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-    ];
-    let currentIndexes = [];
-    requestAnimationFrame(step);
-    function step(timestamp) {
-      if (!startTime) {
-        startTime = timestamp;
-      }
-      const lastIndex = _.findLastIndex(stacks, stack => stack.length !== 0);
-      currentIndexes[lastIndex] = stacks[lastIndex].shift();
-      currentIndexes = currentIndexes.slice(0, lastIndex + 1);
-      colorBoard(currentIndexes);
+  if (stop) {
+    return;
+  }
 
-      if (lastIndex !== 7) {
-        stacks[lastIndex + 1] = getNextPossibleSelections(currentIndexes, lastIndex + 1);
-      }
+  init();
+  count = 0;
+  const stacks = [getNextPossibleSelections([], 0), [], [], [], [], [], [], []];
+  let currentIndexes = [];
+  requestAnimationFrame(step);
+  function step(timestamp) {
+    if (!startTime) {
+      startTime = timestamp;
+    }
+    const lastIndex = _.findLastIndex(stacks, stack => stack.length !== 0);
+    currentIndexes[lastIndex] = stacks[lastIndex].shift();
+    currentIndexes = currentIndexes.slice(0, lastIndex + 1);
+    count++;
+    colorBoard(currentIndexes, timestamp - startTime);
 
-      if (currentIndexes.length !== 8 && !stop) {
-        requestAnimationFrame(step);
-      } else {
-        stop = true;
-        document.querySelector('.result').innerHTML += ' tries + ' + Math.round(timestamp - startTime) + 'ms spent';
-      }
+    if (lastIndex !== pieceColors.length - 1) {
+      stacks[lastIndex + 1] = getNextPossibleSelections(currentIndexes, lastIndex + 1);
+    }
+
+    if (currentIndexes.length !== pieceColors.length && !stop) {
+      requestAnimationFrame(step);
+    } else {
+      stop = true;
     }
   }
 }
 
 function getNextPossibleSelections(currentIndexes, pieceIndex) {
-  const baseSelections = _.flatten(currentIndexes.map((c, i) => combinations[i][c]));
-  return combinations[pieceIndex].reduce((acc, value, index) => {
+  const baseSelections = _.flatten(currentIndexes.map((c, i) => piecePositions[i][c]));
+  return piecePositions[pieceIndex].reduce((acc, value, index) => {
     const combinedSelections = _.uniqWith([...baseSelections, ...value], _.isEqual);
     if (combinedSelections.length !== baseSelections.length + value.length) {
       return acc;
     }
 
-    if (pieceIndex !== 7) {
-      if (!advancedCut(combinedSelections, pieceIndex + 1)) {
+    if (pieceIndex !== pieceColors.length - 1) {
+      if (!forwardCut(combinedSelections, pieceIndex + 1)) {
         return acc;
       }
     }
@@ -103,7 +132,7 @@ function getNextPossibleSelections(currentIndexes, pieceIndex) {
   }, []);
 }
 
-function advancedCut(selections, nextIndex) {
+function forwardCut(selections, nextIndex) {
   // find empty sections
   const checkedBoard = boardNames.map(r => _.fill(Array(r.length), 0));
   selections.forEach(p => checkedBoard[p[0]][p[1]] = 1);
@@ -111,6 +140,7 @@ function advancedCut(selections, nextIndex) {
   let x = y = 0;
   const sections = [];
 
+  // grow the section from 4 directions
   while (checkedBoard.some(r => r.some(i => i === 0))) {
     if (checkedBoard[x][y] === 0) {
       checkedBoard[x][y] = 1;
@@ -167,10 +197,10 @@ function advancedCut(selections, nextIndex) {
     return false;
   }
 
-  // the section has to have at least one of the 0 ~ currentIndex - 1 piece fits 
+  // the section has to have at least one of the remaining piece fits
   // (sec includes all positions of that piece)
   if (sections.some(
-    sec => !_.flatten(combinations.slice(nextIndex)).some(
+    sec => !_.flatten(piecePositions.slice(nextIndex)).some(
       c => _.uniqWith([...sec, ...c], _.isEqual).length === sec.length
     )
   )) {
@@ -180,19 +210,23 @@ function advancedCut(selections, nextIndex) {
   return true;
 }
 
-function colorBoard(indexes) {
+function clearBoard() {
   document.querySelectorAll('.block').forEach(node => node.classList.remove(...pieceColors));
   document.querySelectorAll('.combination').forEach(node => {
     node.classList.remove('invalid');
     node.innerHTML = '';
   });
+}
+
+function colorBoard(indexes, elapsedTime) {
+  clearBoard();
   document.querySelector('#color' + (indexes.length - 1)).classList.add('invalid');
-  count++;
-  document.querySelector('.result').innerHTML = count;
+  document.querySelector('.result').innerHTML =
+    count + ' tries + ' + Math.round(elapsedTime) + 'ms spent + ' + Math.round(count / elapsedTime * 1000) + 'fps (also tries per sec wihtout GUI)';
   for (let i = 0; i < indexes.length; i++) {
     document.querySelector('#color' + i).innerHTML = indexes[i];
 
-    const positions = combinations[i][indexes[i]];
+    const positions = piecePositions[i][indexes[i]];
     for (const position of positions) {
       const node = document.querySelector('#block' + position[0].toString() + position[1].toString());
       node.classList.add(pieceColors[i]);
@@ -202,27 +236,27 @@ function colorBoard(indexes) {
 
 function removeTargetsFromCombinations() {
   targetPositions.forEach(
-    target => combinations.forEach(
+    target => piecePositions.forEach(
       c => _.remove(c,
         i => i.some(
-            co => _.isEqual(co, target)
-          )
+          co => _.isEqual(co, target)
         )
       )
-    );
+    )
+  );
 }
 
-function generateCombinations() {
+function generateAllPiecePositions() {
   pieces.forEach(piece => {
-    const combination = [];
-    combinations.push(combination);
+    const piecePosition = [];
+    piecePositions.push(piecePosition);
     piece.forEach(startingPosition => {
       let rowStart = startingPosition;
       do {
-        combination.push(rowStart);
+        piecePosition.push(rowStart);
         let current = moveRight(rowStart);
         while (current) {
-          combination.push(current);
+          piecePosition.push(current);
           current = moveRight(current);
         }
         rowStart = moveDown(rowStart);
@@ -252,7 +286,7 @@ function validatePosition(coordinates) {
   return coordinates;
 }
 
-function generatePieces() {
+function generateDirections() {
   pieces.forEach(piece => {
     const originalPiece = _.head(piece);
 
