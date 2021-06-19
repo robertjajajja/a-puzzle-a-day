@@ -222,7 +222,7 @@ function colorBoard(indexes, elapsedTime) {
   clearBoard();
   document.querySelector('#color' + (indexes.length - 1)).classList.add('invalid');
   document.querySelector('.result').innerHTML =
-    count + ' tries + ' + Math.round(elapsedTime) + 'ms spent + ' + Math.round(count / elapsedTime * 1000) + 'fps (also tries per sec wihtout GUI)';
+    count + ' tries + ' + Math.round(elapsedTime) + 'ms spent + ' + Math.round(count / elapsedTime * 1000) + 'fps (also tries per sec without GUI)';
   for (let i = 0; i < indexes.length; i++) {
     document.querySelector('#color' + i).innerHTML = indexes[i];
 
