@@ -4,3 +4,4 @@ Check out the original puzzle page at https://www.dragonfjord.com/product/a-puzz
 
 # Running it
 Just pull the repo and open the html file in a browser.
+Alternatively, you could just go https://robertjajajja.github.io/a-puzzle-a-day/
