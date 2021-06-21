@@ -1,3 +1,10 @@
+const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][new Date().getMonth()];
+const date = new Date().getDate();
+
+document.querySelector('#month').value = month;
+document.querySelector('#date').value = date;
+
+
 const boardNames = [
   ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
   ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -35,9 +42,10 @@ let stop = true;
 
 function init() {
   clearBoard();
-  const targets = [];
-  targets[0] = document.querySelector('#month').value;
-  targets[1] = document.querySelector('#date').value;
+  const targets = [
+    document.querySelector('#month').value,
+    document.querySelector('#date').value
+  ];
   targetPositions = targets.map(t => boardNamePositionMap[t]);
   piecePositions = [];
   generateAllPiecePositions();
